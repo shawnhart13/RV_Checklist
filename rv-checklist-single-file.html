@@ -1,0 +1,1134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1f2937">
+  <title>RV Checklist</title>
+<style>
+
+:root {
+  --bg: #f6f4ef;
+  --card: #ffffff;
+  --ink: #111827;
+  --muted: #6b7280;
+  --line: #e5e7eb;
+  --brand: #1f2937;
+  --brand-soft: #e7ecef;
+  --ok: #166534;
+  --danger: #9f1239;
+  --shadow: 0 12px 30px rgba(17, 24, 39, 0.08);
+  --radius: 18px;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: calc(18px + env(safe-area-inset-top)) 18px 18px;
+  background: rgba(246, 244, 239, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--muted);
+  font-weight: 700;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(24px, 5vw, 42px);
+  line-height: 1.05;
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+.progress-pill {
+  min-width: 112px;
+  align-self: center;
+  background: var(--brand);
+  color: white;
+  border-radius: 999px;
+  padding: 10px 14px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.progress-pill strong {
+  display: block;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.progress-pill span {
+  display: block;
+  font-size: 11px;
+  opacity: .85;
+  margin-top: 4px;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  gap: 18px;
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 18px;
+}
+
+.sidebar {
+  position: sticky;
+  top: 122px;
+  align-self: start;
+  display: grid;
+  gap: 14px;
+}
+
+.checklist-nav {
+  display: grid;
+  gap: 10px;
+}
+
+.nav-card {
+  text-align: left;
+  border: 1px solid var(--line);
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 14px;
+  box-shadow: none;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.nav-card.active {
+  border-color: var(--brand);
+  box-shadow: var(--shadow);
+}
+
+.nav-title {
+  display: block;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.nav-sub {
+  display: block;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.mini-bar {
+  display: block;
+  height: 6px;
+  background: var(--brand-soft);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.mini-bar span {
+  display: block;
+  height: 100%;
+  background: var(--brand);
+}
+
+.note-card,
+.toolbar,
+.section-card,
+.empty {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.note-card {
+  padding: 14px;
+}
+
+.note-card label {
+  display: block;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+textarea,
+input[type="search"] {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px;
+  font: inherit;
+  background: #fff;
+}
+
+textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+.button-stack {
+  display: grid;
+  gap: 8px;
+}
+
+button {
+  font: inherit;
+}
+
+.secondary,
+.filter {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 11px 12px;
+  background: var(--card);
+  color: var(--ink);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.secondary.danger {
+  color: var(--danger);
+}
+
+.content {
+  min-width: 0;
+}
+
+.toolbar {
+  position: sticky;
+  top: 122px;
+  z-index: 10;
+  padding: 14px;
+  display: grid;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.progress-track {
+  height: 12px;
+  background: var(--brand-soft);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progress-track span {
+  display: block;
+  height: 100%;
+  width: 0;
+  background: var(--brand);
+  transition: width .2s ease;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+}
+
+.filter {
+  flex: 1;
+}
+
+.filter.active {
+  background: var(--brand);
+  color: white;
+}
+
+.sections {
+  display: grid;
+  gap: 14px;
+}
+
+.section-card {
+  overflow: hidden;
+}
+
+.section-head {
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+  background: #fafafa;
+}
+
+.section-head h2 {
+  margin: 0;
+  font-size: 19px;
+}
+
+.section-head p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.items {
+  display: grid;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  align-items: start;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  min-height: 54px;
+}
+
+.item:last-child {
+  border-bottom: 0;
+}
+
+.item input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.box {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #9ca3af;
+  border-radius: 8px;
+  margin-top: 1px;
+  display: inline-grid;
+  place-items: center;
+}
+
+.item.done .box {
+  border-color: var(--ok);
+  background: var(--ok);
+}
+
+.item.done .box::after {
+  content: "✓";
+  color: white;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.item-text {
+  line-height: 1.35;
+  font-size: 16px;
+}
+
+.item.done .item-text {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--muted);
+}
+
+footer {
+  max-width: 1300px;
+  margin: 0 auto;
+  padding: 12px 18px 28px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media (max-width: 860px) {
+  .app-header {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .progress-pill {
+    justify-self: start;
+    min-width: 150px;
+  }
+
+  main {
+    grid-template-columns: 1fr;
+    padding: 12px;
+  }
+
+  .sidebar,
+  .toolbar {
+    position: static;
+  }
+
+  .checklist-nav {
+    grid-template-columns: 1fr;
+  }
+}
+
+</style>
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <p class="eyebrow">RV Checklist</p>
+      <h1 id="title">Loading…</h1>
+      <p id="subtitle" class="subtitle"></p>
+    </div>
+    <div class="progress-pill">
+      <strong id="progressPercent">0%</strong>
+      <span id="progressText">0 complete</span>
+    </div>
+  </header>
+
+  <main>
+    <aside class="sidebar">
+      <div id="checklistNav" class="checklist-nav"></div>
+
+      <div class="note-card">
+        <label for="tripNote">Trip note</label>
+        <textarea id="tripNote" placeholder="Example: Sebago weekend, site 42"></textarea>
+      </div>
+
+      <div class="button-stack">
+        <button id="exportLog" class="secondary">Export progress</button>
+        <button id="resetChecklist" class="secondary danger">Reset current</button>
+        <button id="resetAll" class="secondary danger">Reset all</button>
+      </div>
+    </aside>
+
+    <section class="content">
+      <div class="toolbar">
+        <div class="progress-track"><span id="progressBar"></span></div>
+        <input id="search" type="search" placeholder="Search checklist items">
+        <div class="filters">
+          <button class="filter active" data-filter="all">All</button>
+          <button class="filter" data-filter="open">Open</button>
+          <button class="filter" data-filter="done">Done</button>
+        </div>
+      </div>
+
+      <div id="sections" class="sections"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Progress saves on this device only. Good for campgrounds; bad for excuses.</p>
+  </footer>
+<script>
+
+const CHECKLISTS = [
+  {
+    "id": "leaving-home-hitching",
+    "title": "Leaving Home + Hitching Up",
+    "subtitle": "Hensley Hitch",
+    "mode": "travel day",
+    "sections": [
+      {
+        "title": "Before Backing Up to the Trailer",
+        "items": [
+          "Truck fueled and ready",
+          "Tow mirrors installed or adjusted",
+          "Trailer tires visually checked",
+          "Trailer tires chocked before hitching",
+          "Trailer interior secured: cabinets, drawers, fridge, loose items",
+          "Slides fully in and verified clear",
+          "Awning fully retracted and locked",
+          "Entry steps in / entry handle secured",
+          "Roof vents, windows, antenna, and exterior items secured",
+          "Shore power disconnected and cord stowed",
+          "Water hose disconnected; city water cap on; water pump off unless needed",
+          "Sewer valves closed; sewer cap on; hose and fittings stowed",
+          "Propane cylinders secured; travel/appliance plan confirmed",
+          "Stabilizers / leveling jacks fully raised",
+          "Hitch area clear of blocks, tools, cords, and obstacles",
+          "Hensley hitch bar / stinger inserted in truck receiver",
+          "Hitch pin and clip installed in truck receiver",
+          "Hitch bar taper lightly lubricated if needed",
+          "Hensley weight distribution relaxed before final hookup"
+        ]
+      },
+      {
+        "title": "Hensley Hitch Alignment and Connection",
+        "items": [
+          "Stop close to the hitch box and compare hitch bar angle to hitch box angle",
+          "Use the trailer tongue jack to set hitch box height to match the hitch bar",
+          "Use Hensley screw jacks / spring bar support rods to match the hitch box up/down angle to the hitch bar",
+          "Back squarely into the hitch box; stop and realign if the bar is binding or entering crooked",
+          "Seat the hitch bar fully into the hitch box",
+          "If aligned but short by the last inch, use the over-center latches to pull the bar fully home",
+          "Close both over-center latches firmly",
+          "Install the Hensley safety keys / pins",
+          "Connect safety chains, crossed under the hitch, with enough slack for turns",
+          "Connect breakaway cable to the tow vehicle, independent of the safety chains",
+          "Plug in 7-way electrical cord",
+          "Route breakaway cable and electrical cord so they do not bind, pinch, or catch during turns",
+          "Tension spring bars / weight distribution to normal towing marks",
+          "Confirm left and right spring bar jack heights match",
+          "Lock spring bar jacks / support rods",
+          "Raise tongue jack fully and stow jack foot/block if needed",
+          "Confirm Hensley strut assemblies are tight and jam nuts are secure"
+        ]
+      },
+      {
+        "title": "Lights, Brakes, and Final Walk-Around",
+        "items": [
+          "Running lights work",
+          "Left turn signal works",
+          "Right turn signal works",
+          "Brake lights work",
+          "Hazards work",
+          "Brake controller connected and showing trailer",
+          "Manual brake controller test completed during first slow roll",
+          "TPMS active / tire pressure checked if using sensors",
+          "Wheel chocks removed only after fully hitched",
+          "Leveling blocks, pads, tools, and wheel chocks stowed",
+          "Exterior compartments closed and locked",
+          "Entry door locked",
+          "Confirm: Hensley latches closed, safety pins installed, chains connected, breakaway connected, 7-way connected, tongue jack raised, struts tight",
+          "Final 360 walk-around: look high, low, under, and behind",
+          "Pull forward slowly and make gentle left/right turns to confirm cords, chains, and breakaway cable have enough slack",
+          "Re-check hitch connection at the first stop or after the first few miles"
+        ]
+      },
+      {
+        "title": "Last House Check Before Leaving the Driveway",
+        "items": [
+          "House doors locked",
+          "Garage door closed",
+          "Thermostat set",
+          "Stove / oven off",
+          "Trash handled",
+          "Refrigerator / food plan handled",
+          "Medications packed",
+          "Wallets, IDs, campground reservation, RV paperwork, and keys packed",
+          "Phones charged; route loaded",
+          "Dog gear loaded: food, water, leashes, medications, towels, cleanup bags",
+          "Final question: \u201cWhat would be painful to forget?\u201d"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "arriving-unhitching-campsite",
+    "title": "Arriving, Unhitching + Campsite Setup",
+    "subtitle": "Hensley Hitch",
+    "mode": "camp setup",
+    "sections": [
+      {
+        "title": "Arrival and Site Walk",
+        "items": [
+          "Stop safely before entering the site if possible",
+          "Check site number / reservation",
+          "Walk the site before backing in",
+          "Look up: trees, branches, wires, roof clearance",
+          "Look down: rocks, stumps, fire ring, hookups, low spots, soft ground",
+          "Confirm slide clearance on both sides",
+          "Confirm awning clearance",
+          "Confirm truck exit path after unhitching",
+          "Locate power pedestal, water spigot, sewer connection, and picnic/fire area",
+          "Decide trailer position before backing: level, utility reach, door side, and view",
+          "Spotter ready and visible",
+          "Windows down / phones or radios ready for backing communication"
+        ]
+      },
+      {
+        "title": "Positioning and Leveling While Hitched",
+        "items": [
+          "Back trailer into final position",
+          "Confirm trailer is not blocking road, site edge, or campground path",
+          "Check side-to-side level before unhitching",
+          "Add leveling blocks under low-side tires if needed",
+          "Pull forward/back slowly onto leveling blocks if used",
+          "Re-check side-to-side level",
+          "Center steering wheel and keep truck/trailer as straight as practical for unhitching",
+          "Put truck in park and set parking brake",
+          "Keep trailer connected until wheel chocks are placed"
+        ]
+      },
+      {
+        "title": "Secure Trailer Before Unhitching",
+        "items": [
+          "Chock trailer wheels firmly on both sides",
+          "Place tongue jack block or pad under tongue jack",
+          "Lower tongue jack onto block/pad",
+          "Raise tongue jack enough to take some weight off the truck, but do not force anything",
+          "Confirm trailer is stable and chocks are holding",
+          "Disconnect 7-way electrical cord and stow safely",
+          "Disconnect breakaway cable from tow vehicle",
+          "Disconnect safety chains from tow vehicle"
+        ]
+      },
+      {
+        "title": "Hensley Unhitching",
+        "items": [
+          "Relax Hensley weight distribution / spring bar jacks",
+          "Confirm spring bars are unloaded before opening latches",
+          "Remove Hensley safety keys / pins from over-center latches",
+          "Open both over-center latches",
+          "If latches are under pressure, stop and adjust tongue jack height or spring bar tension slightly",
+          "Do not pry, hammer, or force the latch system",
+          "Confirm the hitch bar / stinger is free to slide out of the hitch box",
+          "Pull truck straight forward slowly",
+          "Stop after a few feet and confirm nothing is still connected",
+          "Move truck to parking position",
+          "Remove hitch bar / stinger from truck receiver if desired",
+          "Store hitch bar, pins, and keys where they will not be misplaced",
+          "Leave hitch box angle reasonably neutral for easier rehitching later"
+        ]
+      },
+      {
+        "title": "Front-to-Back Level and Stabilize",
+        "items": [
+          "Use tongue jack to level trailer front-to-back",
+          "Confirm trailer level inside or with level app/tool",
+          "Lower stabilizer jacks / leveling jacks according to trailer system",
+          "Use pads/blocks under stabilizers if ground is soft",
+          "Stabilizers snug only unless they are true leveling jacks",
+          "Do not lift trailer tires off the ground with stabilizers",
+          "Re-check door swing and general trailer stability"
+        ]
+      },
+      {
+        "title": "Power Setup",
+        "items": [
+          "Inspect campground pedestal before plugging in",
+          "Breaker OFF before connecting power cord",
+          "Plug surge protector / EMS into pedestal first if used",
+          "Confirm correct power, polarity, and no faults",
+          "Connect RV power cord to surge protector / pedestal",
+          "Turn pedestal breaker ON",
+          "Confirm RV has power inside",
+          "Set fridge, water heater, A/C, and battery charging as needed",
+          "Route cord so it is not a trip hazard or sitting in standing water"
+        ]
+      },
+      {
+        "title": "Water Setup",
+        "items": [
+          "Confirm water pump OFF before connecting city water",
+          "Connect water pressure regulator to spigot",
+          "Connect water filter if used",
+          "Connect fresh water hose to RV city water inlet",
+          "Slowly turn water on and check for leaks at spigot, filter, regulator, and RV inlet",
+          "Confirm faucets work and air clears from lines",
+          "Confirm water heater mode/valves are correct before heating water",
+          "If using fresh tank instead of city water, confirm pump and tank level"
+        ]
+      },
+      {
+        "title": "Sewer Setup, If Full Hookup",
+        "items": [
+          "Put gloves on",
+          "Confirm black and gray valves are closed before removing sewer cap",
+          "Connect sewer hose to RV outlet securely",
+          "Connect hose to campground sewer connection with proper adapter",
+          "Support hose with downhill slope if staying connected",
+          "Check for leaks before walking away",
+          "Keep black tank valve closed until ready to dump",
+          "Keep gray tank valve closed unless intentionally leaving it open for a short-term reason",
+          "Store gloves and sewer gear away from fresh water gear"
+        ]
+      },
+      {
+        "title": "Slides, Awning, and Exterior Setup",
+        "items": [
+          "Confirm trailer is level and stable before extending slides",
+          "Confirm exterior slide path is clear",
+          "Confirm interior slide path is clear",
+          "Extend slides one at a time and listen/watch for problems",
+          "Confirm slide seals look normal",
+          "Extend awning only if wind and site clearance are safe",
+          "Set outdoor rug, chairs, grill, and dog area as desired",
+          "Keep grill/fire sources away from trailer, awning, and propane compartment",
+          "Set steps and entry handle",
+          "Check exterior lights if arriving after dark"
+        ]
+      },
+      {
+        "title": "Interior Setup",
+        "items": [
+          "Unlock travel items / secure loose items",
+          "Open vents/windows as desired",
+          "Set thermostat",
+          "Confirm fridge is operating correctly",
+          "Confirm bathroom is usable",
+          "Confirm water heater is on only after water system is ready",
+          "Check for leaks under sinks and around toilet after water pressure is on",
+          "Put medications, wallets, keys, and dog gear in known locations",
+          "Set up dog water, food, leashes, and cleanup bags"
+        ]
+      },
+      {
+        "title": "Final Camp Setup Check",
+        "items": [
+          "Truck parked safely and not blocking road or neighboring site",
+          "Trailer chocks still secure",
+          "Tongue jack stable on block/pad",
+          "Stabilizers/jacks stable",
+          "Power connected and working",
+          "Water connected or fresh tank plan confirmed",
+          "Sewer connected or dump plan confirmed",
+          "Propane status checked",
+          "Slides clear and fully extended",
+          "Awning safe for current wind",
+          "Door locked/unlocked according to camp plan",
+          "Site is safe for dogs and people",
+          "Final question: \u201cWhat would make tomorrow morning annoying if I ignore it now?\u201d"
+        ]
+      }
+    ]
+  },
+  {
+    "id": "dewinterizing-first-trip",
+    "title": "Dewinterizing + First-Trip Maintenance",
+    "subtitle": "Seasonal prep",
+    "mode": "maintenance",
+    "sections": [
+      {
+        "title": "Supplies and Setup",
+        "items": [
+          "Fresh water hose ready",
+          "Water pressure regulator ready",
+          "New water filter / cartridge ready if used",
+          "Plain unscented household bleach ready for sanitizing",
+          "Bucket, towels, flashlight, gloves, and basic hand tools ready",
+          "Torque wrench available for lug nuts",
+          "Tire pressure gauge / compressor ready",
+          "RV parked safely with wheels chocked",
+          "Battery connected and charged",
+          "Shore power available if needed",
+          "Owner manuals available for appliance-specific checks"
+        ]
+      },
+      {
+        "title": "Initial Exterior and Interior Inspection",
+        "items": [
+          "Walk around RV before turning systems on",
+          "Check for obvious winter damage, leaks, cracks, or loose panels",
+          "Inspect roof from safe access point if possible",
+          "Check roof seams, vents, skylights, antenna, and sealant",
+          "Check sidewall seams, windows, marker lights, and compartment doors",
+          "Check underbelly for hanging material, rodent damage, or loose wires",
+          "Check inside cabinets and ceiling corners for water stains or mildew",
+          "Check around toilet, sinks, water pump, water heater, and low-point drains for signs of leaks",
+          "Open compartments and confirm no nests, chewed wires, or stored items left loose"
+        ]
+      },
+      {
+        "title": "Plumbing Dewinterizing \u2014 Flush Antifreeze",
+        "items": [
+          "Confirm fresh tank drain is closed",
+          "Confirm low-point drains are closed",
+          "Confirm water heater drain plug / anode rod is installed if it was removed for winter",
+          "Inspect water heater anode rod if equipped; replace if heavily eaten away",
+          "Move water heater bypass valves back to normal/use position",
+          "Turn winterizing valve/pickup tube back to normal water-source position",
+          "Remove or bypass water filters before flushing antifreeze if needed",
+          "Connect city water with pressure regulator, or add fresh water to tank and use water pump",
+          "Flush cold side of each faucet until water runs clear",
+          "Flush hot side of each faucet until water runs clear",
+          "Flush kitchen sink",
+          "Flush bathroom sink",
+          "Flush shower",
+          "Flush toilet",
+          "Flush outside shower / sprayer if equipped",
+          "Flush washer, dishwasher, icemaker, or extra fixtures if equipped",
+          "Run enough water through the water heater lines to clear antifreeze",
+          "Check that pink antifreeze is gone from all fixtures",
+          "Turn water off and relieve pressure when finished flushing"
+        ]
+      },
+      {
+        "title": "Sanitize Fresh Water System",
+        "items": [
+          "Drain old water from fresh tank if it has been sitting",
+          "Calculate bleach amount: 1/4 cup plain unscented bleach per 15 gallons of fresh tank capacity",
+          "Dilute bleach in a gallon of water before adding it to the fresh tank",
+          "Add diluted bleach solution to fresh tank",
+          "Fill fresh tank with fresh water",
+          "Turn on water pump",
+          "Run each cold faucet until a light bleach smell reaches the faucet",
+          "Run each hot faucet until a light bleach smell reaches the faucet",
+          "Include shower, toilet, and outside shower if equipped",
+          "Let solution sit for several hours, or overnight if practical",
+          "Drain fresh tank",
+          "Flush all lines with fresh water until bleach smell is gone or minimal",
+          "Reinstall / replace drinking water filter after sanitizing and flushing",
+          "Refill fresh tank or leave empty depending on first-trip plan"
+        ]
+      },
+      {
+        "title": "Water Pressure and Leak Test",
+        "items": [
+          "Connect city water through pressure regulator",
+          "Slowly pressurize system",
+          "Listen for water pump cycling when no faucet is open if using pump",
+          "Check under every sink for leaks",
+          "Check toilet base and water valve for leaks",
+          "Check shower connections and drain area",
+          "Check water pump fittings and strainer bowl",
+          "Check water heater exterior compartment for leaks",
+          "Check low-point drains and fresh tank drain for drips",
+          "Check city water inlet and outside shower for leaks",
+          "Run hot water only after confirming water heater is full",
+          "Fix leaks before leaving home"
+        ]
+      },
+      {
+        "title": "Propane and Appliance Checks",
+        "items": [
+          "Confirm propane cylinders are secured",
+          "Check propane level",
+          "Inspect propane hoses, regulator, and fittings for obvious cracking or damage",
+          "Open propane cylinder valves slowly",
+          "Smell-check around propane compartment and appliances",
+          "Light stove burners to purge air from propane lines",
+          "Test refrigerator on electric mode if available",
+          "Test refrigerator on propane mode if you normally use it that way",
+          "Test furnace briefly",
+          "Test water heater only after confirming it is full of water",
+          "Test air conditioner on shore power",
+          "Test microwave and outlets",
+          "Consider annual propane leak-down / pressure test by a certified RV tech if not recently done"
+        ]
+      },
+      {
+        "title": "Tires, Wheels, Brakes, and Running Gear",
+        "items": [
+          "Check tire pressure cold and inflate to trailer placard / tire specification",
+          "Inspect tire sidewalls inside and outside for cracks, bulges, cuts, or weather checking",
+          "Check tire tread and uneven wear",
+          "Check DOT date code / tire age",
+          "Check spare tire pressure and condition",
+          "Torque lug nuts to trailer manufacturer specification",
+          "Inspect wheel bearings / grease service history",
+          "Service bearings if due by time, mileage, or condition",
+          "Inspect suspension, shackles, equalizers, springs, and hangers",
+          "Grease suspension fittings if equipped",
+          "Test trailer running lights, brake lights, turn signals, and hazards",
+          "Test brake controller connection",
+          "Test manual trailer brake function during a slow roll",
+          "Test breakaway switch battery/function carefully according to manufacturer guidance"
+        ]
+      },
+      {
+        "title": "Hensley Hitch and Towing Hardware",
+        "items": [
+          "Inspect Hensley hitch head / box for damage or loose hardware",
+          "Inspect hitch bar / stinger for damage, rust, or burrs",
+          "Inspect receiver pin, clip, safety keys, and latch hardware",
+          "Inspect over-center latches for smooth operation",
+          "Inspect spring bars and jack assemblies/support rods",
+          "Inspect strut assemblies and jam nuts",
+          "Confirm all Hensley hardware is tight and complete",
+          "Lubricate hitch bar taper / contact points as appropriate",
+          "Confirm safety chains are in good condition",
+          "Confirm breakaway cable is not frayed or damaged",
+          "Confirm 7-way cord and plug are clean and undamaged",
+          "Confirm torque/condition of hitch receiver hardware on tow vehicle"
+        ]
+      },
+      {
+        "title": "Electrical and Battery System",
+        "items": [
+          "Inspect battery terminals for corrosion and tightness",
+          "Confirm battery is fully charged",
+          "Check battery disconnect switch position",
+          "Check converter/charger operation on shore power",
+          "Check 12V lights and fans",
+          "Check GFCI outlet reset/test",
+          "Check major 120V outlets",
+          "Check fuses and breakers",
+          "Check solar controller / monitor if equipped",
+          "Confirm emergency gear can be powered or charged"
+        ]
+      },
+      {
+        "title": "Safety Equipment",
+        "items": [
+          "Test smoke detector",
+          "Test carbon monoxide detector",
+          "Test propane detector",
+          "Replace detector batteries if needed",
+          "Check detector expiration dates",
+          "Check fire extinguisher pressure and date",
+          "Confirm first aid kit is stocked",
+          "Confirm emergency exits open",
+          "Confirm flashlight/headlamp works",
+          "Confirm roadside kit is packed",
+          "Confirm jack, lug wrench/socket, torque wrench, and leveling blocks are packed",
+          "Confirm registration, insurance, roadside assistance, and campground info are available"
+        ]
+      },
+      {
+        "title": "Slides, Awning, Seals, and Exterior Gear",
+        "items": [
+          "Extend and retract slides at home if space allows",
+          "Listen for unusual slide motor noise or binding",
+          "Inspect slide roof/topper if equipped",
+          "Inspect slide seals",
+          "Extend and retract awning if safe",
+          "Inspect awning fabric and arms",
+          "Check entry steps and handrail",
+          "Check stabilizer jacks / leveling system operation",
+          "Check exterior compartment locks and latches",
+          "Wash windows and mirrors if needed",
+          "Confirm sewer hose, fittings, gloves, and supports are packed",
+          "Confirm fresh water hose, regulator, filter, and fittings are packed",
+          "Confirm power cord, adapters, and surge protector/EMS are packed"
+        ]
+      },
+      {
+        "title": "Final First-Trip Readiness Check",
+        "items": [
+          "No active water leaks found",
+          "Water heater confirmed full before heating",
+          "Fresh water system sanitized or intentionally flushed only",
+          "Propane appliances tested or service scheduled",
+          "Tires inspected, inflated, and lug nuts torqued",
+          "Brakes and lights tested",
+          "Hitch inspected and ready",
+          "Safety detectors tested",
+          "Roof/seals checked for obvious issues",
+          "First short tow planned conservatively",
+          "Re-check tires, hubs, hitch, and straps/gear after the first few miles",
+          "Final question: \u201cWhat failure would ruin the first trip, and have I checked it?\u201d"
+        ]
+      }
+    ]
+  }
+];
+
+const STORAGE_KEY = "rvChecklistApp.v1";
+let state = loadState();
+let activeChecklistId = state.activeChecklistId || CHECKLISTS[0].id;
+let filterMode = "all";
+let query = "";
+
+function loadState() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+  } catch {
+    return {};
+  }
+}
+
+function saveState() {
+  state.activeChecklistId = activeChecklistId;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function keyFor(checklistId, sectionIndex, itemIndex) {
+  return `${checklistId}::${sectionIndex}::${itemIndex}`;
+}
+
+function isDone(checklistId, sectionIndex, itemIndex) {
+  return !!state[keyFor(checklistId, sectionIndex, itemIndex)];
+}
+
+function setDone(checklistId, sectionIndex, itemIndex, value) {
+  state[keyFor(checklistId, sectionIndex, itemIndex)] = value;
+  saveState();
+  render();
+}
+
+function resetChecklist(checklistId) {
+  if (!confirm("Reset this checklist?")) return;
+  Object.keys(state).forEach(k => {
+    if (k.startsWith(checklistId + "::")) delete state[k];
+  });
+  saveState();
+  render();
+}
+
+function resetAll() {
+  if (!confirm("Reset every checklist?")) return;
+  state = {};
+  activeChecklistId = CHECKLISTS[0].id;
+  saveState();
+  render();
+}
+
+function getCounts(checklist) {
+  let total = 0;
+  let done = 0;
+  checklist.sections.forEach((section, si) => {
+    section.items.forEach((_, ii) => {
+      total++;
+      if (isDone(checklist.id, si, ii)) done++;
+    });
+  });
+  return { total, done, pct: total ? Math.round((done / total) * 100) : 0 };
+}
+
+function renderNav() {
+  const nav = document.querySelector("#checklistNav");
+  nav.innerHTML = "";
+  CHECKLISTS.forEach(list => {
+    const counts = getCounts(list);
+    const button = document.createElement("button");
+    button.className = "nav-card" + (list.id === activeChecklistId ? " active" : "");
+    button.innerHTML = `
+      <span class="nav-title">${escapeHtml(list.title)}</span>
+      <span class="nav-sub">${escapeHtml(list.subtitle)} · ${counts.done}/${counts.total}</span>
+      <span class="mini-bar"><span style="width:${counts.pct}%"></span></span>
+    `;
+    button.addEventListener("click", () => {
+      activeChecklistId = list.id;
+      saveState();
+      render();
+    });
+    nav.appendChild(button);
+  });
+}
+
+function render() {
+  renderNav();
+  const checklist = CHECKLISTS.find(c => c.id === activeChecklistId) || CHECKLISTS[0];
+  const counts = getCounts(checklist);
+
+  document.querySelector("#title").textContent = checklist.title;
+  document.querySelector("#subtitle").textContent = checklist.subtitle + " · " + checklist.mode;
+  document.querySelector("#progressText").textContent = `${counts.done} of ${counts.total} complete`;
+  document.querySelector("#progressPercent").textContent = `${counts.pct}%`;
+  document.querySelector("#progressBar").style.width = `${counts.pct}%`;
+
+  const container = document.querySelector("#sections");
+  container.innerHTML = "";
+
+  checklist.sections.forEach((section, sectionIndex) => {
+    const matchingItems = section.items
+      .map((item, itemIndex) => ({ item, itemIndex }))
+      .filter(({ item, itemIndex }) => {
+        const done = isDone(checklist.id, sectionIndex, itemIndex);
+        const matchesMode = filterMode === "all" || (filterMode === "open" && !done) || (filterMode === "done" && done);
+        const matchesQuery = !query || item.toLowerCase().includes(query.toLowerCase()) || section.title.toLowerCase().includes(query.toLowerCase());
+        return matchesMode && matchesQuery;
+      });
+
+    if (matchingItems.length === 0) return;
+
+    const sectionEl = document.createElement("section");
+    sectionEl.className = "section-card";
+
+    const sectionTotal = section.items.length;
+    const sectionDone = section.items.filter((_, ii) => isDone(checklist.id, sectionIndex, ii)).length;
+
+    sectionEl.innerHTML = `
+      <div class="section-head">
+        <div>
+          <h2>${escapeHtml(section.title)}</h2>
+          <p>${sectionDone}/${sectionTotal} complete</p>
+        </div>
+      </div>
+      <div class="items"></div>
+    `;
+
+    const itemsEl = sectionEl.querySelector(".items");
+
+    matchingItems.forEach(({ item, itemIndex }) => {
+      const id = keyFor(checklist.id, sectionIndex, itemIndex);
+      const done = isDone(checklist.id, sectionIndex, itemIndex);
+      const itemEl = document.createElement("label");
+      itemEl.className = "item" + (done ? " done" : "");
+      itemEl.innerHTML = `
+        <input type="checkbox" ${done ? "checked" : ""} aria-label="${escapeHtml(item)}">
+        <span class="box"></span>
+        <span class="item-text">${escapeHtml(item)}</span>
+      `;
+      itemEl.querySelector("input").addEventListener("change", e => {
+        setDone(checklist.id, sectionIndex, itemIndex, e.target.checked);
+      });
+      itemsEl.appendChild(itemEl);
+    });
+
+    container.appendChild(sectionEl);
+  });
+
+  if (!container.children.length) {
+    container.innerHTML = `<div class="empty">No items match the current filter.</div>`;
+  }
+
+  document.querySelector("#tripNote").value = state.tripNote || "";
+}
+
+function escapeHtml(str) {
+  return String(str)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function exportLog() {
+  const lines = [];
+  lines.push("RV Checklist Progress");
+  lines.push("Generated: " + new Date().toLocaleString());
+  lines.push("");
+  if (state.tripNote) {
+    lines.push("Trip note: " + state.tripNote);
+    lines.push("");
+  }
+
+  CHECKLISTS.forEach(list => {
+    const counts = getCounts(list);
+    lines.push(`${list.title} — ${counts.done}/${counts.total} complete`);
+    list.sections.forEach((section, si) => {
+      lines.push("  " + section.title);
+      section.items.forEach((item, ii) => {
+        lines.push(`    ${isDone(list.id, si, ii) ? "[x]" : "[ ]"} ${item}`);
+      });
+    });
+    lines.push("");
+  });
+
+  const blob = new Blob([lines.join("\n")], { type: "text/plain" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "rv-checklist-progress.txt";
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+document.querySelector("#resetChecklist").addEventListener("click", () => resetChecklist(activeChecklistId));
+document.querySelector("#resetAll").addEventListener("click", resetAll);
+document.querySelector("#exportLog").addEventListener("click", exportLog);
+
+document.querySelector("#tripNote").addEventListener("input", e => {
+  state.tripNote = e.target.value;
+  saveState();
+});
+
+document.querySelector("#search").addEventListener("input", e => {
+  query = e.target.value;
+  render();
+});
+
+document.querySelectorAll("[data-filter]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    filterMode = btn.dataset.filter;
+    document.querySelectorAll("[data-filter]").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    render();
+  });
+});
+
+render();
+
+</script>
+</body>
+</html>
